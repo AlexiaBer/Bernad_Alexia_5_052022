@@ -1,11 +1,24 @@
+let products = [];
 
-  let products = [];
-  async function getListProducts(){
- await fetch("http://localhost:3000/api/products")
+function getProducts () {
+  products = fetch("http://localhost:3000/api/products")
+  .then(function(res) {
+    if (res.ok) {
+      return res.json();
+    }
+  })
+  .catch(function(err) {
+  });
+}
 
-    .then((response) => response.json())
-    .then((datas) => (products = datas))
-    .catch((error) => console.log(error));
-   }
 
-   console.log("products");
+products = getProducts
+
+
+console.log(getProducts)
+
+
+
+// const productArticle = document.getElementById("items");
+
+// const product = document.createElement("a")
