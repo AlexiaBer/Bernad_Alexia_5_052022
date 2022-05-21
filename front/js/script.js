@@ -1,29 +1,25 @@
 let productsArray = [];
-let item = " ";
+let item = [];
 
 fetch("http://localhost:3000/api/products")
-  .then( data => data.json())
-  .then( productsList => {      
+  .catch(error => console.log(error))
+  .then(data => data.json()) // réponse, qui renvoie une promise
+  .then(productsList => {      // productsList = pas le nom de la fonction, c'est une variable. Ce sont mes canapés. Je vais ensuite les afficher
+    console.log(productsList); 
     for(let product of productsList) { //boucle qui parcourt le tableau et pour chaque case du tableau créera une variable "product"
-      let productArticle = new Object;
-      function parcourir () {
-        document.getElementById("items").innerHTM = `
-                                                  <a href="./product.html?id=42">
-                                                    <article>
-                                                      <img src="${productArticle.imageUrl}" alt="${productArticle.altTxt}">
-                                                      <h3 class="productName">${productArticle.name}</h3>
-                                                      <p class="productDescription">${productArticle.description}</p>
-                                                    </article>
-                                                  </a>
-                                                  `   
-
-      }
-      productsList = productsArray;   
-      product = item;                                         
-    };
-      productsList.forEach(product => parcourir); // cette ligne passe à un autre canapé !! mais toujours pas TOUS les canapés affichés}
+        document.getElementById("items").innerHTML += // REVOIR AVEC ULRICH CONCATENATION 
+                                                  `           
+                                                    <a href="./product.html?id=${product._id}">
+                                                      <article>
+                                                        <img src="${product.imageUrl}" alt="${product.altTxt}">
+                                                        <h3 class="productName">${product.name}</h3>
+                                                        <p class="productDescription">${product.description}</p>
+                                                      </article>
+                                                    </a>
+                                                  ` 
+      item = product;         // REVOIR AVEC ULRICH PORTEE DES VARIABLES. Comment passer d'une variable locale à globale ?
+  
     }
-    )
-    //for(let i = O; i<productsList.length; i++) {}    
-    // 
-    //setAttribute pour modif les liens href ?? element.setAttribute(<name>, <value> ) 
+      //   const url = "http://localhost:3000/api/products.html"
+
+  })
