@@ -1,5 +1,12 @@
-// ce fichier JS sera à charger sur toutes les pages où on en a besoin, pour récupérer toutes les fonctionnalités du panier
+function saveCart(cart){
+    localStorage.setItem("cart", JSON.stringify(cart));
+ }
 
-// faire une fonction pour enregistrer le panier dans le localstorage. Le paramètre lui dit quel panier on veut enregistrer.
-
-
+ function getCart(){
+    let cart = localStorage.getItem("cart");
+    if (cart == null) {
+       return [];
+    } else {
+       return JSON.parse(cart);
+    }
+ }

@@ -40,15 +40,25 @@ for (let i = 0; i < productInfo.colors.length; i++) {
    }
     
    let addToCartButton = document.getElementById("addToCart"); // Je récup l'élément sur lequel je veux détecter le clic
-   addToCartButton.addEventListener("click", addToCart => {
+   addToCartButton.addEventListener("click", () => {
       let cart = getCart();
       let quantity = document.getElementById("quantity");
-      //let selectedColor = document.getElementBy productInfo.colors.value;
       let selectColor = document.getElementById("colors");
-      let selectedColor = selectColor.options[selectColor.selectedIndex].value;
-     // let selectedColor = selectColor.options[selectColor.selectedIndex].value;
-      cart.push(articleId,selectedColor,quantity.value);
-      saveCart(cart);
-   }
-   
+      let selectedColor = selectColor.options[selectColor.selectedIndex].text;
+     
+      let product = {"id" : articleId, "color" : selectedColor, "quantity" : quantity.value}
+     // cart.push(product);
+     // saveCart(cart);
+
+      let idAlreadyInCart = cart.find(prod => prod.id == articleId);//.find permet de chercher un élément dans le tableau : y a-t-il dans le panier des produits (prod) qui ont le même id que le produit que je viens d'ajouter(product)
+      let colorAlreadyInCart = cart.find(prod => prod.color == selectedColor)
+      if(idAlreadyInCart && colorAlreadyInCart != undefined) { 
+          product.quantity++
+      }else {
+          product.quantity = 1;
+          cart.push(product); // cart est un tableau, et donc en faisant .push : on ajoute un product.
+      }
+          saveCart(cart) // on enregistre le nouveau panier
+  }
+  
    );
