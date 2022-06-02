@@ -46,16 +46,17 @@ for (let i = 0; i < productInfo.colors.length; i++) {
       let selectColor = document.getElementById("colors");
       let selectedColor = selectColor.options[selectColor.selectedIndex].text;
      
+      let product = [articleId, selectedColor, quantity.value]
+      /**
       let product = {"id" : articleId, "color" : selectedColor, "quantity" : quantity.value}
-     // cart.push(product);
-     // saveCart(cart);
+      */
 
       let idAlreadyInCart = cart.find(prod => prod.id == articleId);//.find permet de chercher un élément dans le tableau : y a-t-il dans le panier des produits (prod) qui ont le même id que le produit que je viens d'ajouter(product)
       let colorAlreadyInCart = cart.find(prod => prod.color == selectedColor)
-      if(idAlreadyInCart && colorAlreadyInCart != undefined) { 
-          product.quantity++
+      if(idAlreadyInCart && colorAlreadyInCart != undefined) {  
+         product.splice(2,1,quantity.value)
       }else {
-          product.quantity = 1;
+          product[2]= quantity.value;
           cart.push(product); // cart est un tableau, et donc en faisant .push : on ajoute un product.
       }
           saveCart(cart) // on enregistre le nouveau panier

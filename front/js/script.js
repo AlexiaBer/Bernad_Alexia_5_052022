@@ -16,10 +16,7 @@ fetch("http://localhost:3000/api/products")
                                                         <p class="productDescription">${product.description}</p>
                                                       </article>
                                                     </a>
-                                                  ` 
-      item = product;         // REVOIR AVEC ULRICH PORTEE DES VARIABLES. Comment passer d'une variable locale à globale ?
-  
+                                                  `          
     }
-      //   const url = "http://localhost:3000/api/products.html"
 
   })
