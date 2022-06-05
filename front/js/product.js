@@ -45,21 +45,26 @@ for (let i = 0; i < productInfo.colors.length; i++) {
       let quantity = document.getElementById("quantity");
       let selectColor = document.getElementById("colors");
       let selectedColor = selectColor.options[selectColor.selectedIndex].text;
-     
+        /**
       let product = [articleId, selectedColor, quantity.value]
-      /**
+        */
       let product = {"id" : articleId, "color" : selectedColor, "quantity" : quantity.value}
-      */
+ 
+      console.log("quantité du produit : " + product.quantity);
+//product.quantity = la valeur écrite par l'utilisateur
+      let idAndColorAlreadyInCart = cart.findIndex(prod => prod.id == articleId && prod.color == selectedColor);//.find permet de chercher un élément dans le tableau : y a-t-il dans le panier des produits (prod) qui ont le même id que le produit que je viens d'ajouter(product)
+     console.log (idAndColorAlreadyInCart)
 
-      let idAlreadyInCart = cart.find(prod => prod.id == articleId);//.find permet de chercher un élément dans le tableau : y a-t-il dans le panier des produits (prod) qui ont le même id que le produit que je viens d'ajouter(product)
-      let colorAlreadyInCart = cart.find(prod => prod.color == selectedColor)
-      if(idAlreadyInCart && colorAlreadyInCart != undefined) {  
-         product.splice(2,1,quantity.value)
-      }else {
-          product[2]= quantity.value;
-          cart.push(product); // cart est un tableau, et donc en faisant .push : on ajoute un product.
-      }
-          saveCart(cart) // on enregistre le nouveau panier
+      if(idAndColorAlreadyInCart != -1) { // cela ne marche pas !!! JS ne rentre pas dans cette condition..
+       
+      let newQuantity = parseInt(product.quantity) + parseInt(cart[idAndColorAlreadyInCart].quantity);
+      let newProduct = {"id" : articleId, "color" : selectedColor, "quantity" : newQuantity} 
+      cart.splice(cart[idAndColorAlreadyInCart], 1, newProduct)
+   
+      } else {
+         cart.push(product); // cart est un tableau, et donc en faisant .push : on ajoute un product.
+    }
+       saveCart(cart) // on enregistre le nouveau panier
   }
   
    );
