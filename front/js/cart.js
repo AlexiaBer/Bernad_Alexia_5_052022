@@ -1,12 +1,17 @@
 
 function getCart(){
     let cart = localStorage.getItem("cart");
-    if (cart == null) {
+    if (cart == null || cart == undefined) {
        return [];
     } else {
        return JSON.parse(cart);
     }
   }
+
+function saveCart(cart){
+    localStorage.setItem("cart", JSON.stringify(cart));
+ }
+
 
 function showCart() {
 
@@ -18,8 +23,8 @@ function showCart() {
       let contentHtml = "";
       for (let product of cart) {
         console.log (cart);
-        let productMatchesWCatalogue = data.find(el => el._id == product.id)
-        if (productMatchesWCatalogue) {
+        productMatchesWCatalogue = data.find(el => el._id == product.id)
+        if (productMatchesWCatalogue) {             
           product.price = productMatchesWCatalogue.price
           contentHtml += `           
           <article class="cart__item" data-id="${productMatchesWCatalogue._id}" data-color="${productMatchesWCatalogue.color}">
@@ -48,46 +53,88 @@ function showCart() {
       }
       document.getElementById("cart__items").innerHTML = contentHtml;
    
-      //POUR CHANGER LA QUANTITE
-      const quantityInput = document.getElementsByTagName("input")[0];
-      const test = document.getElementsByTagName("value")[0];
-      quantityInput.addEventListener("change", updateValue);
-      
-      
-      function updateValue(newValue) {
-        test.textContent = newValue.target.value;
-        console.log(newValue)
-      }
-      
-      //POUR SUPPRIMER QQCH DU CART
-      
-      let removeCartItemButton = document.getElementsByClassName('deleteItem');
-      console.log(removeCartItemButton);
-      for (let i = 0; i < removeCartItemButton.length; i++) {
-          removeCartItemButton[i].addEventListener("click", function(event) {
-            let cart = getCart();
-            let product = {"id" : articleId, "color" : selectedColor, "quantity" : quantity.value}
-            if (productMatchesWCatalogue._id == product.id && productMatchesWCatalogue.color == product.color) {
-              let deletedProductIndex = cart.findIndex(prod => prod.id == articleId && prod.color == selectedColor);
-              console.log(deletedProductIndex)
-              localStorage.removeItem(cart[deletedProductIndex])
-            }
-            else {
-            }
-            let buttonClicked = event.target
-            buttonClicked.parentElement.parentElement.parentElement.parentElement.remove()
-            }
-          )}
-     }
-    )}
 
+     let quantityInput = document.getElementsByClassName("itemQuantity");
+      for (let i = 0; i < quantityInput.length; i++) {
+            quantityInput[i].addEventListener("change", function(event) {
+            let inputModified = event.target;
+            let inputModifiedIdOfProduct = {idDuProduitHtml : inputModified.closest(".cart__item").getAttribute("data-id")};
+            console.log ("input modified of product : " + inputModifiedIdOfProduct.idDuProduitHtml);
+            let inputModifiedColorOfProduct = {colorDuProduitHtml : inputModified.parentElement.parentElement.parentElement.children[0].children[1].textContent}
+            console.log("input modified of product : " + inputModifiedColorOfProduct.colorDuProduitHtml);
+
+            let newQuantity = inputModified.value;
+            console.log("new quantity : " + newQuantity);
+            let cart = getCart();  
+            let indexDuProdAModifier = cart.findIndex(prod => prod.id == inputModifiedIdOfProduct.idDuProduitHtml && prod.color == inputModifiedColorOfProduct.colorDuProduitHtml)
+            if (indexDuProdAModifier != undefined) {
+              let updatedProduct = {"id" : inputModifiedIdOfProduct.idDuProduitHtml, "color" : inputModifiedColorOfProduct.colorDuProduitHtml, "quantity" : newQuantity};
+              console.log("updateProduct : " + updatedProduct);
+              cart.splice(indexDuProdAModifier, 1, updatedProduct)
+              saveCart(cart) 
+            }
+            console.log ("index du produit à supprimer dans le LS : " + indexDuProdAModifier);
+            // MODIF QUANTITE DANS LE LS
+            saveCart(cart);
+ 
+            }
+
+            )}
+     
+
+
+//POUR SUPPRIMER UN PRODUIT DU PANIER (VISIBLE) ET DU CART (LOCAL STORAGE)
+
+      let removeCartItemButton = document.getElementsByClassName('deleteItem');
+      for (let i = 0; i < removeCartItemButton.length; i++) {
+            removeCartItemButton[i].addEventListener("click", function(event) {
+            let buttonClicked = event.target;
+            let buttonClickedIdOfProduct = {idDuProduitHtml : buttonClicked.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id")}
+            console.log (buttonClickedIdOfProduct.idDuProduitHtml);
+            let buttonClickedColorOfProduct = {colorDuProduitHtml : buttonClicked.parentElement.parentElement.parentElement.children[0].children[1].textContent}
+            console.log(buttonClickedColorOfProduct.colorDuProduitHtml);
+            let cart = getCart();  
+            let indexDuProdASuppr = cart.findIndex(prod => prod.id == buttonClickedIdOfProduct.idDuProduitHtml && prod.color == buttonClickedColorOfProduct.colorDuProduitHtml)
+            console.log ("index du produit à supprimer dans le LS : " + indexDuProdASuppr);
+            cart.splice(indexDuProdASuppr,1)
+            saveCart(cart);
+            buttonClicked.parentElement.parentElement.parentElement.parentElement.remove()
+          }
+          
+            )
+
+        }
+      })
+    }
 showCart()
 
 
-      /** 
-      const buttonCreated = document.createElement("button")
-      let parentOfButton = document.getElementsByClassName("deleteItem")[0]
-      parentOfButton.appendChild(buttonCreated)
-      document.getElementsByTagName("button")[0].innerHTML = "Supprimer"
-      console.log(buttonCreated)
+
+
+ /** 
+      let input = quantityInput[0];
+
+      input.addEventListener("change", function(event) { 
+        console.log(quantityInput.index)
+        let inputChanged = event.target
+        console.log(inputChanged)
+      })
+
+    for (let i = 0; i < quantityInput.length; i++) {
+        let input = quantityInput[i]
+        let quantityInputArray = [document.getElementsByClassName("itemQuantity")[i]]
+    //    console.log (quantityInputArray)
+  }
+    //  }
+
+    //  function changeQuantityInLs() {
+        //(prod => prod.id == productChosen.id && prod.color == productChosen.color)
+        
+        //let cart = getCart();
+
+
+        //let updatedProduct = {"id" : articleId, "color" : selectedColor, "quantity" : newQuantity};
+
+        //saveCart(cart) 
       */
+    
