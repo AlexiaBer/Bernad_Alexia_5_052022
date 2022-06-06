@@ -1,22 +1,22 @@
+
 function getCart(){
-  let cart = localStorage.getItem("cart");
+    let cart = localStorage.getItem("cart");
     if (cart == null) {
        return [];
     } else {
        return JSON.parse(cart);
     }
-   }
+  }
 
-  function showCart() {
+function showCart() {
 
     fetch("http://localhost:3000/api/products/")
     .catch(error => console.log(error))
     .then(data => data.json())
     .then(data => {
-      console.log(data);
       let cart = getCart();
       let contentHtml = "";
-      for (product of cart) {
+      for (let product of cart) {
         console.log (cart);
         let productMatchesWCatalogue = data.find(el => el._id == product.id)
         if (productMatchesWCatalogue) {
@@ -44,65 +44,50 @@ function getCart(){
           </div>
           </article> 
           ` 
-          }
-
+        }
+      }
       document.getElementById("cart__items").innerHTML = contentHtml;
-
-      }
-    })
-
-  }
-
-  showCart();
-
-
-let removeCartItemButton = document.getElementsByClassName('deleteItem')
-for (let i = 0; i < removeCartItemButton.length; i++) {
-  let button = removeCartItemButton[i]
-  button.addEventListener("click", function() {
-    console.log("clicked")
-  } )
-}
-    /** 
-   getCart();
-
-    for(let LsArticleChosen of cart) { //boucle qui parcourt le tableau et pour chaque case du tableau créera une variable "articleChosen"
+   
+      //POUR CHANGER LA QUANTITE
+      const quantityInput = document.getElementsByTagName("input")[0];
+      const test = document.getElementsByTagName("value")[0];
+      quantityInput.addEventListener("change", updateValue);
       
-      fetch("http://localhost:3000/api/products/" + articleChosen.id)
-         .catch(error => console.log(error))
-         .then(data => data.json())
-         
-         .then (ApiProduct => {
-            for (let ApiProductCategory of ApiProduct) { 
-          // réponse, qui renvoie une promise
-
-      document.getElementById("cart__items").innerHTML +=             // ça devrait être sur la boucle du CART et non pas de l'API !
-                                                  `           
-                                                  <article class="cart__item" data-id="{product-ID}" data-color="{product-color}">
-                                                  <div class="cart__item__img">
-                                                    <img src="${ApiProductCategory.imageUrl}" alt="${ApiProductCategory.altTxt}">
-                                                  </div>
-                                                  <div class="cart__item__content">
-                                                    <div class="cart__item__content__description">
-                                                      <h2>${ApiProductCategory.name}</h2>
-                                                      <p>${LsArticleChosen.color}</p>
-                                                      <p>${ApiProductCategory.price} €</p>
-                                                    </div>
-                                                    <div class="cart__item__content__settings">
-                                                      <div class="cart__item__content__settings__quantity">
-                                                        <p>Qté : </p>
-                                                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${LsArticleChosen.quantity}">
-                                                      </div>
-                                                      <div class="cart__item__content__settings__delete">
-                                                        <p class="deleteItem">Supprimer</p>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  </article> 
-                                                  ` 
-         }
-         )
+      
+      function updateValue(newValue) {
+        test.textContent = newValue.target.value;
+        console.log(newValue)
       }
-   }
-*/
-  
+      
+      //POUR SUPPRIMER QQCH DU CART
+      
+      let removeCartItemButton = document.getElementsByClassName('deleteItem');
+      console.log(removeCartItemButton);
+      for (let i = 0; i < removeCartItemButton.length; i++) {
+          removeCartItemButton[i].addEventListener("click", function(event) {
+            let cart = getCart();
+            let product = {"id" : articleId, "color" : selectedColor, "quantity" : quantity.value}
+            if (productMatchesWCatalogue._id == product.id && productMatchesWCatalogue.color == product.color) {
+              let deletedProductIndex = cart.findIndex(prod => prod.id == articleId && prod.color == selectedColor);
+              console.log(deletedProductIndex)
+              localStorage.removeItem(cart[deletedProductIndex])
+            }
+            else {
+            }
+            let buttonClicked = event.target
+            buttonClicked.parentElement.parentElement.parentElement.parentElement.remove()
+            }
+          )}
+     }
+    )}
+
+showCart()
+
+
+      /** 
+      const buttonCreated = document.createElement("button")
+      let parentOfButton = document.getElementsByClassName("deleteItem")[0]
+      parentOfButton.appendChild(buttonCreated)
+      document.getElementsByTagName("button")[0].innerHTML = "Supprimer"
+      console.log(buttonCreated)
+      */
