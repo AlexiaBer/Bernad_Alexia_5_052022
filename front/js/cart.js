@@ -1,5 +1,5 @@
 function getCart(){
-    let cart = localStorage.getItem("cart");
+  let cart = localStorage.getItem("cart");
     if (cart == null || cart == undefined) {
        return [];
     } else {
@@ -73,16 +73,17 @@ function showCart() {
       for (let i = 0; i < quantityInput.length; i++) {
             quantityInput[i].addEventListener("change", function(event) {
             let inputModified = event.target;
-            let ModifiedIdOfProduct = {idDuProduitHtml : inputModified.closest(".cart__item").getAttribute("data-id")};
-            let ModifiedColorOfProduct = {colorDuProduitHtml : inputModified.parentElement.parentElement.parentElement.children[0].children[1].textContent};
+            let idOfMofifiedProduct = {idDuProduitHtml : inputModified.closest(".cart__item").getAttribute("data-id")};
+            let modifiedColorOfProduct = {colorDuProduitHtml : inputModified.parentElement.parentElement.parentElement.children[0].children[1].textContent};
             let newQuantity = inputModified.value;
             let cart = getCart();  
-            let modifiedProductIndex = cart.findIndex(prod => prod.id == ModifiedIdOfProduct.idDuProduitHtml && prod.color == ModifiedColorOfProduct.colorDuProduitHtml)
+            let modifiedProductIndex = cart.findIndex(prod => prod.id == idOfMofifiedProduct.idDuProduitHtml && prod.color == modifiedColorOfProduct.colorDuProduitHtml)
             location.reload();
             if (modifiedProductIndex != undefined) {
-              let updatedProduct = {"id" : ModifiedIdOfProduct.idDuProduitHtml, "color" : ModifiedColorOfProduct.colorDuProduitHtml, "quantity" : newQuantity};
+              let updatedProduct = {"id" : idOfMofifiedProduct.idDuProduitHtml, "color" : modifiedColorOfProduct.colorDuProduitHtml, "quantity" : newQuantity};
               cart.splice(modifiedProductIndex, 1, updatedProduct);
               saveCart(cart);
+              totalPriceCalculation(cart);
             }
   
             })
@@ -101,10 +102,10 @@ function showCart() {
             let buttonClickedColorOfProduct = {"colorDuProduitHtml" : buttonClicked.parentElement.parentElement.parentElement.children[0].children[1].textContent};
             let cart = getCart();  
             let indexDuProdASuppr = cart.findIndex(prod => prod.id == buttonClickedIdOfProduct.idDuProduitHtml && prod.color == buttonClickedColorOfProduct.colorDuProduitHtml);
-            totalPriceCalculation(cart);
             cart.splice(indexDuProdASuppr,1);
             saveCart(cart);
             buttonClicked.parentElement.parentElement.parentElement.parentElement.remove();
+            location.reload()
           })
         }
         }
@@ -112,42 +113,113 @@ function showCart() {
     )}
 showCart()
 
-let form = document.querySelector("form.cart__order__form");
 
-console.log(form.lastName);
 
-const validEmail = function (emailInput) {
-  let emailRegEx = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9-_]+[.]{1}[a-z]{2,10}$", "g")
-  let emailTest = emailRegEx.test(emailInput.value)
-  if(emailTest = false) {
-    document.getElementById("emailErrorMsg").innerHTML = "L'adresse e-mail n'est pas valide"
-  }
-};
- 
-const validFirstName = function (firstNameInput) {
-  let firstNameRegex = new RegExp("[a-zA-Z]+")
-  let firstNameTest = firstNameRegex.test(firstNameInput.value)
-  if (firstNameTest = false) {
-    document.getElementById("firstNameErrorMsg").innerHTML = "Le prénom contient un caractère invalide"
-  }
-};
+// VALIDER LES DONNEES SAISIES PAR L'UTILISATEUR 
 
-const validLastName = function(lastNameInput) {
-  let lasttNameRegex = new RegExp("[a-zA-Z]+")
-  let lastNameTest = lasttNameRegex.test(lastNameInput.value)
-  if (lastNameTest = false) {
-    document.getElementById("firstNameErrorMsg").innerHTML = "Le prénom contient un caractère invalide"
-  }
+let form = document.querySelector(".cart__order__form");
+
+console.log(form);
+
+function validName (nameInput) {
+  let nameRegex = new RegExp("^[a-zA-Z]+$", "g");
+  let nameTest = nameRegex.test(nameInput.value);
+  return nameTest;
 }
 
+function validAddress (addressInput) {
+  let addressRegEx = new RegExp('^[a-zA-Z0-9- ]+$', 'g');
+  let addressTest = addressRegEx.test(addressInput.value);
+  return addressTest;
+}
+
+function validCity (cityInput) {
+  let cityRegEx = new RegExp("^[a-zA-Z-]+$");
+  let cityTest = cityRegEx.test(cityInput.value);
+  return cityTest;
+}
+
+function validEmail (emailInput) {
+  let emailRegEx = new RegExp(
+    "^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9-_]+[.]{1}[a-z]{2,10}$",
+    "g"
+  );
+  let emailTest = emailRegEx.test(emailInput.value);
+  return emailTest;
+};
+
 form.firstName.addEventListener("change", function(){
-    validFirstName(this);
+  if(!validName(this)) {
+    document.getElementById("firstNameErrorMsg").innerText = "Le format du prénom n'est pas accepté";
+  }
 });
 
-form.lasttName.addEventListener("change", function(){
-  validLastName(this);
+form.lastName.addEventListener("change", function(){
+  if(!validName(this)) {
+    document.getElementById("lastNameErrorMsg").innerText = "Le format du nom n'est pas accepté";
+  }
 });
+
+form.address.addEventListener("change", function(){
+  if(!validAddress(this)) {
+    document.getElementById("addressErrorMsg").innerText = "Le format de l'adresse n'est pas accepté";
+  }
+});
+
+form.city.addEventListener("change", function(){
+  if(!validCity(this)){
+    document.getElementById("cityErrorMsg").innerText = "Le format de la ville n'est pas accepté";
+  }
+})
 
 form.email.addEventListener("change", function(){
-  validEmail(this);
+  if(!validEmail(this)){
+    document.getElementById("emailErrorMsg").innerText = "Le format de l'e-mail n'est pas accepté";
+  }
 });
+
+/** ENVOI DE LA REQUETE POST*/
+
+/** RECUPERER LES ID PRODUCTS DU CART*/
+const parseCart = JSON.parse(localStorage.getItem("cart"));
+let products = [];
+for (let product of parseCart){
+products.push(product.id)
+}
+console.log(products);
+
+
+/** POUR ENVOYER LA REQUETE POST */
+
+let orderId = "";
+
+async function postAPI() {
+  let contact = {
+    firstName: form.firstName.value,
+    lastName: form.lastName.value,
+    address: form.address.value,
+    city: form.city.value,
+    email:form.email.value
+    }
+    console.log(contact)
+
+    let response = await fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      "Accept":"application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({contact, products})
+    })
+    .then(response => response.json())
+    .then(data => {
+      orderId = data.orderId
+      window.location.href = ("confirmation.html?orderid=" + orderId)
+    })
+    console.log(orderId)
+    }
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault(); //empêche la page de se re-charger
+  postAPI()
+})

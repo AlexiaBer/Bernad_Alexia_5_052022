@@ -38,7 +38,12 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
    }
     
    let addToCartButton = document.getElementById("addToCart"); 
-   addToCartButton.addEventListener("click", () => {
+
+
+
+
+   addToCartButton.addEventListener("click", function() {
+
       let cart = getCart();
       let quantity = document.getElementById("quantity");
       let selectColor = document.getElementById("colors");
@@ -50,10 +55,25 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
          let updatedProduct = {"id" : articleId, "color" : selectedColor, "quantity" : newQuantity};
          cart.splice(idAndColorAlreadyInCart, 1, updatedProduct)
          saveCart(cart) 
-      } else {
+         console.log(productChosen.color)
+      } else if (productChosen.quantity == 0 || productChosen.color == "--SVP, choisissez une couleur --") {
+         addToCartButton.disabled = true;
+      }
+      else {
          cart.push(productChosen);
     }
        saveCart(cart)
-  }
+
+})
+
   
-   );
+
+  /**  
+   *  if (productChosen.quantity != 0 || productChosen.color != "--SVP, choisissez une couleur --") {
+      addToCartButton.disabled = true;
+     } 
+    else if (productChosen.quantity != 0 || productChosen.color != "--SVP, choisissez une couleur --") {
+         let button = document.getElementById("addToCart");
+         button.disabled = true;
+        } 
+   */
