@@ -1,3 +1,4 @@
+//fonction pour récupérer le panier dans le LS
 function getCart(){
   let cart = localStorage.getItem("cart");
     if (cart == null || cart == undefined) {
@@ -7,11 +8,13 @@ function getCart(){
     }
   }
 
+//fonction pour enregistrer/màj le panier dans le LS
 function saveCart(cart){
     localStorage.setItem("cart", JSON.stringify(cart));
  }
 
- function totalPriceCalculation (cart) {
+//fonction pour calculer le prix total du panier
+function totalPriceCalculation (cart) {
 
   let articlesQuantity = 0;
   let articlesTotalPrice = 0;
@@ -23,6 +26,7 @@ function saveCart(cart){
    document.getElementById("totalPrice").innerHTML = articlesTotalPrice;
 }
 
+//fonction pour afficher le cart sur la page
 function showCart() {
     fetch("http://localhost:3000/api/products/")
     .catch(error => console.log(error))
@@ -60,14 +64,12 @@ function showCart() {
           </article> 
           `  
         }
-
-
       }
 
       document.getElementById("cart__items").innerHTML = contentHtml;
       totalPriceCalculation(cart);
 
-// POUR MODIFIER LA QUANTITE D'UN PRODUIT
+// pour modifier la quantité d'un produit
 
      let quantityInput = document.getElementsByClassName("itemQuantity");
       for (let i = 0; i < quantityInput.length; i++) {
@@ -92,7 +94,7 @@ function showCart() {
           saveCart(cart);
           }
 
-//POUR SUPPRIMER UN PRODUIT DU PANIER (VISIBLE) ET DU CART (LOCAL STORAGE)
+//pour supprimer un produit du panier (page html) et du cart (localstorage)
 
       let removeCartItemButton = document.getElementsByClassName('deleteItem');
       for (let i = 0; i < removeCartItemButton.length; i++) {
@@ -115,11 +117,9 @@ showCart()
 
 
 
-// VALIDER LES DONNEES SAISIES PAR L'UTILISATEUR 
+// pour valider les données saisies par l'utilisateur
 
 let form = document.querySelector(".cart__order__form");
-
-console.log(form);
 
 function validName (nameInput) {
   let nameRegex = new RegExp("^[a-zA-Z]+$", "g");
@@ -178,18 +178,14 @@ form.email.addEventListener("change", function(){
   }
 });
 
-/** ENVOI DE LA REQUETE POST*/
-
-/** RECUPERER LES ID PRODUCTS DU CART*/
+// pour récupérer les id products du panier dans le LS
 const parseCart = JSON.parse(localStorage.getItem("cart"));
 let products = [];
 for (let product of parseCart){
 products.push(product.id)
 }
-console.log(products);
 
-
-/** POUR ENVOYER LA REQUETE POST */
+// pour envoyer la requête post
 
 let orderId = "";
 
@@ -201,7 +197,6 @@ async function postAPI() {
     city: form.city.value,
     email:form.email.value
     }
-    console.log(contact)
 
     let response = await fetch("http://localhost:3000/api/products/order", {
     method: "POST",

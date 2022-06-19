@@ -11,9 +11,9 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
    .then(data => data.json())
    .then(productInfo => {      
       document.getElementsByClassName("item__img")[0].innerHTML = `<img src="${productInfo.imageUrl}" alt="${productInfo.altTxt}">`
-      document.getElementById("title").innerHTML = `${productInfo.name}`
-      document.getElementById("price").innerHTML = `${productInfo.price}`
-      document.getElementById("description").innerHTML = `${productInfo.description}` 
+      document.getElementById("title").innerText = `${productInfo.name}`
+      document.getElementById("price").innerText = `${productInfo.price}`
+      document.getElementById("description").innerText = `${productInfo.description}` 
 
       for (let i = 0; i < productInfo.colors.length; i++) {
          document.getElementById("colors").innerHTML += `
@@ -24,10 +24,12 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
 
 // DEUXIEME PARTIE DU CODE : L'AJOUT AU PANIER (localStorage)
 
+//fonction pour enregistrer/màj le panier dans le LS
    function saveCart(cart){
       localStorage.setItem("cart", JSON.stringify(cart));
    }
 
+//fonction pour récupérer le panier dans le LS
    function getCart(){
       let cart = localStorage.getItem("cart");
       if (cart == null) {
@@ -39,6 +41,7 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
     
    let addToCartButton = document.getElementById("addToCart"); 
 
+//pour ajouter le produit dans le cart (localStorage)
    addToCartButton.addEventListener("click", function() {
 
       let cart = getCart();
@@ -52,7 +55,6 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
          let updatedProduct = {"id" : articleId, "color" : selectedColor, "quantity" : newQuantity};
          cart.splice(idAndColorAlreadyInCart, 1, updatedProduct)
          saveCart(cart) 
-         console.log(productChosen.color)
       } else if (productChosen.quantity == 0 || productChosen.color == "--SVP, choisissez une couleur --") {
          addToCartButton.disabled = true;
       }
@@ -60,5 +62,4 @@ fetch(`http://localhost:3000/api/products/${articleId}`)
          cart.push(productChosen);
     }
        saveCart(cart)
-
 })

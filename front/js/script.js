@@ -1,13 +1,14 @@
+//pour afficher les canapés sur la page d'accueil. Fetch puis boucle qui parcourt le tableau pour afficher chaque canapé.
 let productsArray = [];
 let item = [];
 
 fetch("http://localhost:3000/api/products")
   .catch(error => console.log(error))
-  .then(data => data.json()) // réponse, qui renvoie une promise
-  .then(productsList => {      // productsList = pas le nom de la fonction, c'est une variable. Ce sont mes canapés. Je vais ensuite les afficher
+  .then(data => data.json())
+  .then(productsList => {      
     console.log(productsList); 
-    for(let product of productsList) { //boucle qui parcourt le tableau et pour chaque case du tableau créera une variable "product"
-        document.getElementById("items").innerHTML += // REVOIR AVEC ULRICH CONCATENATION 
+    for(let product of productsList) { 
+        document.getElementById("items").innerHTML += 
                                                   `           
                                                     <a href="./product.html?id=${product._id}">
                                                       <article>
@@ -18,5 +19,4 @@ fetch("http://localhost:3000/api/products")
                                                     </a>
                                                   `          
     }
-
   })
